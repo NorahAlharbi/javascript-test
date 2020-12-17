@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 // Our schema
 const MusicSchema = new mongoose.Schema({
-  NOTTHERIGHTATTRIBUTE: {
+  artist: {
     type: String,
     required: true
   },
