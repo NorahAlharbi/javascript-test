@@ -17,9 +17,9 @@ const Destroy = () => {
     .catch(error => {
       setNotification(`Couldn't destroy the selected music due to an error: ${error.message}`);
     });
-  }, []);
+  }, [globalStore, id, setNotification]);
 
-  return <Redirect to="/"/>;
+  return <Redirect to="/music"/>;
 }
  
 export default Destroy;

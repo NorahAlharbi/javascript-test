@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { NotificationContext } from '../../shared/Notifications';
+import {GlobalStoreContext} from '../../shared/Globals';
 import Axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
@@ -8,18 +9,46 @@ const MusicForm = ({ endpoint, preload }) => {
   const [inputs, setInputs] = useState({});
   const [redirect, setRedirect] = useState(false);
   const { setNotification } = useContext(NotificationContext);
+  const { globalStore } = useContext(GlobalStoreContext);
 
   useEffect(() => {
     setInputs({...preload});
   }, [preload])
 
   const handleChange = event => {
+    event.persist();
+    setInputs({
+      ...inputs,
+      [event.target.name]: event.target.value
+    });
   };
 
   const handleSubmit = event => {
+    event.preventDefault();
+    console.log(inputs);
+
+    Axios.post(`${globalStore.REACT_APP_ENDPOINT}/${endpoint}`, {
+      ...inputs,
+    })
+    .then(({ data }) => {
+      if (data) {
+        setNotification({
+          type: "success",
+          message: "Music was updated successfully"
+        });
+      }
+
+      setRedirect(true);
+    })
+    .catch((error) => {
+      setNotification({
+        type: "danger",
+        message: `There was an error updating the music: ${error.message}`
+      });
+    });
   };
 
-  if (redirect) return <Redirect to="/"/>;
+  if (redirect) return <Redirect to="/music"/>;
   return (
     <Form onSubmit={handleSubmit}>
       <Form.Label>Artist</Form.Label>
@@ -29,7 +58,7 @@ const MusicForm = ({ endpoint, preload }) => {
           onChange={handleChange} 
           name="artist" 
           placeholder="My Chemical Romance"
-          defaultValue={}
+          defaultValue={inputs.music}
         />
       </Form.Group>
 
@@ -40,7 +69,7 @@ const MusicForm = ({ endpoint, preload }) => {
           onChange={handleChange} 
           name="title" 
           placeholder="Helena"
-          defaultValue={}
+          defaultValue={inputs.music}
         />
       </Form.Group>
 
@@ -51,7 +80,7 @@ const MusicForm = ({ endpoint, preload }) => {
           onChange={handleChange} 
           name="genre" 
           placeholder="Emo"
-          defaultValue={}
+          defaultValue={inputs.music}
         />
       </Form.Group>
 

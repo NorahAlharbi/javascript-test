@@ -5,14 +5,16 @@ import { Container } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import Axios from 'axios';
 import { NotificationContext } from '../../shared/Notifications';
+import { GlobalStoreContext } from '../../shared/Globals';
 
 const Edit = () => {
   const { id } = useParams();
   const [preload, setPreload] = useState({});
+  const { globalStore } = useContext(GlobalStoreContext);
   const { setNotification } = useContext(NotificationContext);
 
   useEffect(() => {
-    Axios.get(``)
+    Axios.get(`${globalStore.REACT_APP_ENDPOINT}/music/${id}`)
     .then(({ data }) => {
       setPreload(data);
     })
@@ -22,7 +24,7 @@ const Edit = () => {
         message: `There was an error retrieving the quote: ${error.message}`
       });
     });
-  }, [id, setNotification]);
+  }, [globalStore, id, setNotification]);
 
   return (
     <>
